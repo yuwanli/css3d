@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>CSS3D</title>
+    <meta name="viewport" id="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no,maximum-scale=1.0">
+    <script src="js/resize.min.js"></script>
+    <script src="js/css3d.js"></script>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        html,body{
+            position: relative;
+            height: 100%;
+        }
+        .layer{
+            width: 100%;
+            display: block;
+        }
+        .abs{
+            position: absolute;
+        }
+        #main{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            /*background-color: #000;*/
+        }
+        .con{
+            width: 2.1rem;
+            left: 0.55rem;
+            top: 30%;
+        }
+        .numCon{
+            width: 0.38rem;
+            height: 0.94rem;
+            left: 50%;
+            top: 50%;
+            -webkit-transform: translateX(-50%) translateY(-50%);
+            -webkit-transform-origin: center;
+            -webkit-animation: zoom 1s linear 6;
+        }
+        .num{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            background-image: url(images/num_group.png);
+            background-size: auto 100%;
+            -webkit-animation: num 5s 1s steps(5,start) forwards;
+        }
+        .arrow{
+            width: 0.32rem;
+            left: 50%;
+            top: 0;
+            -webkit-transform-origin: left bottom;
+            -webkit-animation: arrow 2s linear infinite;
+        }
+        @-webkit-keyframes arrow {
+            0%{
+                -webkit-transform: rotateZ(0deg);
+            }
+            0%{
+                -webkit-transform: rotateZ(-360deg);
+            }
+        }
+        @-webkit-keyframes zoom {
+            0%{
+                -webkit-transform:  translateX(-50%) translateY(-50%) scale(3);
+            }
+            100%{
+                -webkit-transform:  translateX(-50%) translateY(-50%) scale(1);
+            }
+        }
+        @-webkit-keyframes num {
+            0%{
+                background-position: 0 0;
+            }
+            100%{
+                background-position: 100% 0;
+            }
+        }
+    </style>
+</head>
+<body style="background-image: url(images/sky.jpg);background-size: 100% auto;background-position: center">
+<div id="main" >
+    <div class="abs con">
+        <img src="images/shoot.png" class="layer" alt=""/>
+        <img src="images/arrow.png" class="abs arrow" alt=""/>
+        <div class="abs numCon">
+            <div class="num">
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    //创建场景
+    var s = new C3D.Stage();
+    var angleX = 0;
+    var moveX = 0;
+    var startX = 0;
+    var a = 400;
+    var b = 400;
+    s.size(window.innerWidth, window.innerHeight).update();
+    document.getElementById('main').appendChild(s.el);
+
+    //创建1个立方体放入场景
+    var c = new C3D.Skybox();
+    c.size(800).position(0, 0, 0).material({
+        front: {image: ""},
+        back: {image: "images/sky.jpg"},
+        left: {image: ""},
+        right: {image: ""},
+        up: {image: ""},
+        down: {image: ""}
+
+    }).update();
+    s.addChild(c);
+
+    //响应屏幕调整尺寸
+    function resize() {
+        s.size(window.innerWidth, window.innerHeight).update();
+    }
+
+    window.onresize = function () {
+        resize();
+    };
+    resize();
+
+
+
+    for(var i = 0;i<1000;i++){
+        var p = new C3D.Plane();
+        p.size(2,2);
+        p.position(Math.random()*400-200,Math.random()*400-200,Math.random()*400-200);
+        p.material({
+            color : "#fff"
+        });
+
+        c.addChild(p);
+        p.update();
+
+    }
+
+
+
+    //创建相机
+    var camera = s.camera;
+    camera.position(0,0,600);
+    camera.update();
+
+    document.addEventListener("touchstart",function(e){e.preventDefault()});
+    document.getElementById("main").addEventListener("touchstart", touchMoveHandler);
+
+    //刷新场景
+    requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || window.oRequestAnimationFrame ||
+            function (callback) {
+                setTimeout(callback, 10000 / 60);
+            };
+
+
+    function touchMoveHandler(){
+        go();
+    }
+    function go() {
+//            var _len = sp.children.length;
+//
+//            for(var i=0; i<_len; i++){
+//                var _p = sp.children[i];
+//                _p.rotation(-angleY, angleX, 0).update();
+////                    _p.rotate(0.0, 0.2, 0).update();
+//            }
+//        console.log(angleX);
+        a-=2;
+        b-=2;
+        if(a<=-0){
+            a=400
+        }
+        camera.position(0,0,a).update();
+//        if(b%380 == 0&&b<0){
+//            c.position(0,0,b).update()
+//        }
+        requestAnimationFrame(go);
+    }
+</script>
+</body>
+</html>

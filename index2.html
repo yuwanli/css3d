@@ -1,0 +1,410 @@
+<!DOCTYPE HTML>
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>CSS3D</title>
+    <meta name="viewport" id="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no,maximum-scale=1.0">
+    <script src="js/css3d.js"></script>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        html,body{
+            position: relative;
+            height: 100%;
+        }
+        body{
+            background-image: url(images/page1_bg.jpg);
+            background-size: auto 100%;
+            background-repeat: no-repeat;
+            background-position: center;
+
+        }
+        #main{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top:0;
+            /*display: none;*/
+        }
+        .box div{
+            background-size: 100% auto;
+            /*background-repeat: no-repeat;*/
+        }
+        .page2{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            display: none;
+            background-image: url(images/page2_bg.jpg);
+            background-size:  auto 100%;
+            background-repeat: no-repeat;
+            background-position: center;
+            transform: translate3d(0px, 0, -500px) rotateX(75deg) rotateY(0deg) rotateZ(0deg) scale3d(0.1, 0.1, 0.1);
+            transform-origin: center;
+            perspective: 500px;
+            transform-style: preserve-3d;
+            -webkit-animation: in 3s linear forwards;
+        }
+        .cover{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            background-color: #a00;
+            z-index: 100;
+            transform-origin: left center;
+            transform-style: preserve-3d;
+            -webkit-animation: cover 1s 1s linear forwards;
+        }
+        @-webkit-keyframes in {
+            0%{
+                transform: translate3d(0px, 0, -500px) rotateX(75deg) rotateY(0deg) rotateZ(0deg) scale3d(0.1, 0.1, 0.1);
+            }
+            33%{
+                transform: translate3d(0px, 0, 0px) rotateX(75deg) rotateY(0deg) rotateZ(0deg);
+            }
+            66%{
+                transform: translate3d(0px, 0, 0px) rotateX(75deg) rotateY(0deg) rotateZ(0deg);
+            }
+            100%{
+                transform: translate3d(0px, 0, 0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale3d(1, 1, 1);
+            }
+        }
+        @-webkit-keyframes cover {
+            0%{
+                transform: rotateY(0deg) ;
+            }
+            100%{
+                transform: rotateY(-180deg) ;
+            }
+        }
+    </style>
+</head>
+<body style="transform-style: preserve-3d;perspective: 500px;">
+
+<div id="main">
+
+</div>
+<div class="page2">
+    <div class="cover"></div>
+</div>
+<script src="js/zeptoAll.min.js"></script>
+<script src="js/orienter.js"></script>
+<script src="js/jstween.js"></script>
+<script>
+    //创建场景
+    var s = new C3D.Stage();
+    var angleX = 0;
+    var moveX = 0;
+    var startX = 0;
+    s.size(window.innerWidth, window.innerHeight).update();
+//    s.camera.position(0,0,0).rotation(-90,0,0);
+    s.camera.stage.el.setAttribute("id","camera");
+    s.camera.fov = 90;
+    document.getElementById('main').appendChild(s.el);
+
+    //创建1个立方体放入场景
+    var c = new C3D.Sprite();
+
+    var boxSkin = new C3D.Skybox();
+    var photoBox = new C3D.Skybox();
+    boxSkin.size(1000,2000,1000);
+    photoBox.size(700,700,700);
+    photoBox.el.setAttribute("id","photoBox");
+//    for(var i = 0;i<4;i++){
+//        switch (i){
+//            case 0:
+//                for(var j = 1;j<11;j++){
+//                    p = new C3D.Plane();
+//                    q = new C3D.Plane();
+//
+//                    p.position(-500,0,450-(j-1)*100);
+//                    q.position(-350,0,315-(j-1)*70);
+//
+//                    p.el.style.backgroundSize = "100% 100%";
+//                    q.el.style.backgroundSize = "100% 100%";
+//
+//                    p.size(100,2000).rotate(0,90,0).material({
+//                        image:"images/skyBox/skyBox_"+j+".jpg"
+//                    }).update();
+//                    q.size(70,700).rotate(0,90,0).material({
+//                        image:"images/photo/photo_"+j+".png"
+//                    }).update();
+//
+//                    boxSkin.addChild(p);
+//                    photoBox.addChild(q);
+//                }
+//                break;
+//            case 1:
+//                for(var j = 11;j<21;j++){
+//                    p = new C3D.Plane();
+//                    q = new C3D.Plane();
+//
+//                    p.position(-450+100*(j-11),0,-500);
+//                    q.position(-315+70*(j-11),0,-350);
+//
+//                    p.el.style.backgroundSize = "100% 100% ";
+//                    q.el.style.backgroundSize = "100% 100% ";
+//
+//                    p.size(100,2000).rotate(0,0,0).material({
+//                        image:"images/skyBox/skyBox_"+j+".jpg"
+//                    }).update();
+//                    q.size(70,700).rotate(0,0,0).material({
+//                        image:"images/photo/photo_"+j+".png"
+//                    }).update();
+//
+//                    boxSkin.addChild(p);
+//                    photoBox.addChild(q);
+//                }
+//                break;
+//            case 2:
+//                for(var j = 21;j<31;j++){
+//                    p = new C3D.Plane();
+//                    q = new C3D.Plane();
+//
+//                    p.position(500,0,-550+(j-20)*100);
+//                    q.position(350,0,-385+(j-20)*70);
+//
+//                    p.el.style.backgroundSize = "100% 100% ";
+//                    q.el.style.backgroundSize = "100% 100% ";
+//
+//                    p.size(100,2000).rotate(0,-90,0).material({
+//                        image:"images/skyBox/skyBox_"+j+".jpg"
+//                    }).update();
+//                    q.size(70,700).rotate(0,-90,0).material({
+//                        image:"images/photo/photo_"+j+".png"
+//                    }).update();
+//
+//                    boxSkin.addChild(p);
+//                    photoBox.addChild(q);
+//                }
+//                break;
+//            case 3:
+//                for(var j = 31;j<41;j++){
+//                    p = new C3D.Plane();
+//                    q = new C3D.Plane();
+//
+//                    p.position(550-(j-30)*100,0,500);
+//                    q.position(385-(j-30)*70,0,350);
+//
+//                    p.el.style.backgroundSize = "100% 100% ";
+//                    q.el.style.backgroundSize = "100% 100% ";
+//
+//                    p.size(100,2000).rotate(0,180,0).material({
+//                        image:"images/skyBox/skyBox_"+j+".jpg"
+//                    }).update();
+//                    q.size(70,700).rotate(0,180,0).material({
+//                        image:"images/photo/photo_"+j+".png"
+//                    }).update();
+//
+//                    boxSkin.addChild(p);
+//                    photoBox.addChild(q);
+//                }
+//                break;
+//            default :
+//                break;
+//        }
+//    }
+//    for(var j = 0;j<10;j++){
+//        p = new C3D.Plane();
+//        var x = Math.sqrt((2000/Math.PI)*(2000/Math.PI)-250)*Math.sin()
+//        p.position(-450+100*(j-11),0,-500);
+//
+//        p.el.style.backgroundSize = "100% 100% ";
+//
+//        p.size(100,2000).rotate(0,0,0).material({
+//            image:"images/skyBox/skyBox_"+(j+15)+".jpg"
+//        }).update();
+//
+//                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       boxSkin.addChild(p);
+//        photoBox.addChild(q);
+//    }
+//    boxSkin.rotation(0,10,0).update();
+    c.addChild(boxSkin);
+    c.addChild(photoBox);
+    s.addChild(c);
+    c.position(0,0,-1000).update();
+    c.rotation(90,0,0).update();
+    //响应屏幕调整尺寸
+    function resize() {
+        s.size(window.innerWidth, window.innerHeight).update();
+    }
+
+    window.onresize = function () {
+        resize();
+    };
+    resize();
+//    window.addEventListener('deviceorientation', orientationListener, false);
+
+//    var firstFlag = true;
+//    var orienter = new Orienter();
+//    var initB = 0;
+//    var initA = 0;
+//    var nowB = 0;
+//    var nowA = 0;
+//    function orientationListener(e){
+//        if(firstFlag){
+//            initB = e.beta;
+//            initA = e.alpha;
+//            firstFlag = false;
+//        }
+//        nowB = e.beta-initB;
+//        nowA = e.alpha-initA;
+//        if(nowB>10){nowB = 10}
+//        if(nowB<-10){nowB = -10}
+//        s.camera.rotation(nowB,nowA,0).update();
+//    }
+    //刷新场景
+    requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || window.oRequestAnimationFrame ||
+            function (callback) {
+                setTimeout(callback, 1000 / 60);
+            };
+
+    var firstFlag = true;
+    var orienter = new Orienter();
+    var initB = 0;
+    var initA = 0;
+    var initG = 0;
+    orienter.orient = function (e) {
+        if(firstFlag){
+//            initB = e.b;
+            initA = e.a;
+            firstFlag = false;
+        }
+//        nowB = e.b-initB;
+        nowA = e.a-initA;
+//        if(nowB>10){nowB = 10}
+//        if(nowB<-10){nowB = -10}
+//        s.camera.rotation(nowB,nowA,0).update();
+//        boxSkin.rotation(nowB,nowA,0).update();
+        boxSkin.rotation(0,nowA,0).update();
+    };
+//    orienter.init();
+//    s.rotation(0,100,0);
+//    s.update();
+//    JT.to(c,4, {
+//        onRepeat:true,
+//        ease: JT.Linear.None,
+//        onUpdate:function(){
+////            console.log(c.rotationZ);
+//            c.rotationY+=2;
+//            c.update();
+//        },
+//        onEnd: function () {
+//        }
+//    });
+    var d = 0;
+    var f = 0;
+    var e = -490;
+    var g = 1;
+    var t = 0;
+    var flag = true;
+    var route = [{x: 0, y: 0, z:0}, {x: -90, y: 0, z:0}];
+    function go() {
+        JT.fromTo(c.el,2,{
+                    z:0,
+                    scaleX:1,
+                    scaleY:1,
+                    scaleZ:1,
+                    rotationX:0
+                },{
+                    z:-1000,
+                    scaleX:0,
+                    scaleY:0,
+                    scaleZ:0,
+                    rotationX:90,
+                    onEnd: function () {
+                        orienter.init();
+                        $("#main").html(" ");
+                    }
+                }
+        );
+        console.log(photoBox.el.rotationY)
+        JT.fromTo(photoBox.el,2,{
+                    rotationY:photoBox.rotationY
+                },{
+                    z:0,
+                    rotationY:photoBox.rotationY+360
+                }
+        );
+        JT.fromTo(boxSkin.el,2,{
+                    rotationY:boxSkin.rotationY
+                },{
+                    z:0,
+                    rotationY:boxSkin.rotationY-360
+                }
+        );
+
+    }
+    function start(){
+//        s.camera.position(0,1000,0).rotation(-90,0,0);
+
+        JT.fromTo(c.el,2,{
+                z:-1000,
+                rotationX:90
+            },{
+                z:0,
+                rotationX:0,
+                onEnd: function () {
+                    orienter.init()
+                }
+            }
+        );
+        JT.fromTo(photoBox.el,2,{
+                rotationY:0
+            },{
+                z:0,
+                rotationY:360
+            }
+        );
+        JT.fromTo(boxSkin.el,2,{
+                rotationY:0
+            },{
+                z:0,
+                rotationY:-360
+            }
+        );
+    }
+//    go();
+    $(function(){
+        start();
+        var startX = 0;
+        var c = 0;
+        $(document).on("touchstart","body",function(e){
+            e.preventDefault();
+        })
+        $(document).on("touchstart","#photoBox",function(e){
+            var el = e.targetTouches[0];
+            startX = el.pageX;
+        });
+        $(document).on("touchmove","#photoBox",function(e){
+            var el = e.targetTouches[0];
+            var b = -(el.pageX-startX)*0.01;
+            c += b;
+            photoBox.rotation(0,c*2,0).updateT();
+        });
+        $(document).on("touchend","#photoBox",function(e){
+            var el = e.changedTouches[0];
+            startX = el.pageX;
+        });
+        $(document).on("tap","#photoBox",function(){
+            $(document).off("touchmove","#photoBox");
+            $(document).off("touchstart","#photoBox");
+            $(document).off("touchend","#photoBox");
+            orienter.destroy();
+            d = photoBox.rotationY;
+//            f = s.camera.rotationY;
+            go();
+        })
+    })
+
+
+</script>
+</body>

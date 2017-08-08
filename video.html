@@ -1,0 +1,188 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>iphone-inline-video demo with playsinline</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="http://mat1.gtimg.com/zj/yuwanli/dzw1611/xueba/js/iphone-inline-video.browser.js"></script>
+    <style>
+        html, body {
+            padding: 0;
+            background: #222;
+            color: #FFF;
+            text-align: center;
+            font-family: sans-serif;
+            max-width: 500px;
+            margin: auto;
+            height: 100%;
+        }
+        video {
+            display: block;
+            background: black;
+            width: 100%;
+            /*height: calc(100vw / 16 * 9);*/
+            margin: auto;
+            min-height: 100%;
+            position: relative;
+        }
+        /*@media (min-width: 500px) {*/
+        /*video {*/
+        /*height: calc(500px / 16 * 9)*/
+        /*}*/
+        /*}*/
+        .IIV::-webkit-media-controls-play-button,
+        .IIV::-webkit-media-controls-start-playback-button {
+            opacity: 0;
+            pointer-events: none;
+            width: 5px;
+        }
+        figure {
+            width: 100%;
+        }
+        .play {
+            float: left;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+        }
+        .fullscreen {
+            float: right;
+            position: absolute;
+            right: 0;
+            bottom: 0;
+        }
+        .threejs-notice {
+
+        }
+        .threejs-notice a {
+            display: inline-block;
+            vertical-align: top;
+            text-align: left;
+        }
+        h2 {
+            margin: 1em 0;
+        }
+        p {
+            line-height: 25px;
+            font-size: 0.75em;
+            margin: 0 0 1em;
+        }
+        a {
+            color: #FFF;
+        }
+        code {
+            font-size: 1.2em;
+        }
+        h2 span {
+            display: block;
+            font-size: 12px;
+            font-weight: normal;
+        }
+        video{
+            width: 100%;
+
+        }
+    </style>
+</head>
+<body>
+
+<!--<div class="video-container">-->
+<!--<video playsinline src="iphone-inline-video-master/demo/sample.mp4"></video>-->
+<!--<button class='play'>Play/pause</button>-->
+<!--<button class='fullscreen'>Fullscreen</button>-->
+<!--<p>Real <code>&lt;video&gt;</code> with audio</p>-->
+<!--</div>-->
+
+<div class="video-container" style="height: 100%;width:100%;position: relative">
+    <video width="100%"  playsinline src="http://mat1.gtimg.com/zj/yuwanli/dzw1611/xueba/js/000.mp4"  x-webkit-airplay="true" webkit-playsinline="true" preload="auto"></video>
+    <button class='play'>Play/pause</button>
+    <button class='fullscreen'>Fullscreen</button>
+</div>
+
+<!--<div class="threejs-notice">-->
+    <!--Also: <a href="threejs.html">use videos as WebGL textures<br>with Three.js on the iPhone</a>-->
+<!--</div>-->
+
+<script>
+    var videos = document.querySelectorAll('video');
+    var behavior = document.querySelector('#behavior');
+
+    if (location.search === '?enabled=false') {
+        behavior.innerHTML = '(module disabled everywhere via <code>?enabled=false</code>';
+    } else if (location.search === '?enabled=true') {
+        enableVideos(true);
+        behavior.innerHTML = '(module enabled everywhere (whether it’s necessary or not) via <code>?enabled=true</code>)';
+    } else {
+        enableVideos();
+    }
+
+    function enableButtons(video) {
+        var playBtn = video.parentNode.querySelector('.play');
+        var fullscreenButton = video.parentNode.querySelector('.fullscreen');
+
+        if (playBtn) {
+            playBtn.addEventListener('click', function () {
+                if (video.paused) {
+                    video.play();
+                } else {
+                    video.pause();
+                }
+            });
+        }
+
+        if (fullscreenButton) {
+            fullscreenButton.addEventListener('click', function () {
+                video.webkitEnterFullScreen();
+            });
+        }
+    }
+
+    // debug events
+    function debugEvents(video) {
+        [
+            'loadstart',
+            'progress',
+            'suspend',
+            'abort',
+            'error',
+            'emptied',
+            'stalled',
+            'loadedmetadata',
+            'loadeddata',
+            'canplay',
+            'canplaythrough',
+            'playing', // fake event
+            'waiting',
+            'seeking',
+            'seeked',
+            'ended',
+            'durationchange',
+            'timeupdate',
+            'play', // fake event
+            'pause', // fake event
+            'ratechange',
+            'resize',
+            'webkitbeginfullscreen',
+            'webkitendfullscreen',
+        ].forEach(function (event) {
+                    video.addEventListener(event, function () {
+                        if(event=="ended"){
+                            console.info('@', event);
+                        }
+                    });
+                });
+    }
+
+    function enableVideos(everywhere) {
+        for (var i = 0; i < videos.length; i++) {
+            window.makeVideoPlayableInline(videos[i], !videos[i].hasAttribute('muted'), !everywhere);
+            enableButtons(videos[i]);
+            debugEvents(videos[i]);
+        }
+    }
+</script>
+</body>
+</html>
